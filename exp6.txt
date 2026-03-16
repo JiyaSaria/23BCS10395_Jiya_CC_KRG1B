@@ -1,0 +1,74 @@
+import java.util.*;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        int n = sc.nextInt();
+        String[] names = new String[n];
+
+        for(int i = 0; i < n; i++) {
+            names[i] = sc.next();
+        }
+
+        List<Integer>[] graph = new ArrayList[26];
+        for(int i = 0; i < 26; i++)
+            graph[i] = new ArrayList<>();
+
+        int[] indegree = new int[26];
+
+        for(int i = 0; i < n-1; i++) {
+
+            String a = names[i];
+            String b = names[i+1];
+
+            int min = Math.min(a.length(), b.length());
+            boolean found = false;
+
+            for(int j = 0; j < min; j++) {
+
+                if(a.charAt(j) != b.charAt(j)) {
+
+                    int u = a.charAt(j) - 'a';
+                    int v = b.charAt(j) - 'a';
+
+                    graph[u].add(v);
+                    indegree[v]++;
+                    found = true;
+                    break;
+                }
+            }
+
+            if(!found && a.length() > b.length()) {
+                System.out.println("Impossible");
+                return;
+            }
+        }
+
+        Queue<Integer> q = new LinkedList<>();
+
+        for(int i = 0; i < 26; i++) {
+            if(indegree[i] == 0)
+                q.add(i);
+        }
+
+        StringBuilder ans = new StringBuilder();
+
+        while(!q.isEmpty()) {
+
+            int u = q.poll();
+            ans.append((char)(u + 'a'));
+
+            for(int v : graph[u]) {
+                indegree[v]--;
+                if(indegree[v] == 0)
+                    q.add(v);
+            }
+        }
+
+        if(ans.length() < 26)
+            System.out.println("Impossible");
+        else
+            System.out.println(ans.toString());
+    }
+}
